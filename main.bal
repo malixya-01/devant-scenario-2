@@ -36,10 +36,15 @@ service /integration on httpDefaultListener {
 
             // 4. Extract phone code from SOAP response using XML navigation
             // Namespace URIs
-            string SOAP_NS = "http://schemas.xmlsoap.org/soap/envelope/";
+
             string M_NS = "http://www.oorsprong.org/websamples.countryinfo";
             xml[] phoneCodeElems = [soapXml.selectDescendants("{" + M_NS + "}CountryIntPhoneCodeResult")];
-            string? phoneCode = phoneCodeElems.length() > 0 ? phoneCodeElems[0].toString() : "";
+                                        string? phoneCode = "";
+                                        if phoneCodeElems.length() > 0 {
+                                                xml elem = phoneCodeElems[0];
+                                                // Extract text content using XML navigation
+                                                phoneCode = elem.children().toString();
+                                        }
 
             return { countries: countries, phoneCode: phoneCode };
         }
